@@ -1,0 +1,28 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{name}}
+  namespace: argocd
+  # Add a this finalizer ONLY if you want these to cascade delete.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{project}}
+  source:
+    repoURL: {{repo}}
+    targetRevision: {{targetRevision}}
+    path: .
+    helm:
+     valueFiles:
+     - ./stg/values.yaml
+  destination:
+    server: {{server}}
+    namespace: {{namespace}}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    syncOptions:
+     - CreateNamespace=true

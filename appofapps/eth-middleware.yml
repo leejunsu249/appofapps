@@ -1,0 +1,28 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: eth-middleware
+  namespace: argocd
+  # Add a this finalizer ONLY if you want these to cascade delete.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: market
+  source:
+    repoURL: http://gitlab.mgmt.an2.shd.naemo.io/mona/eth-middleware-helm.git
+    targetRevision: master
+    path: .
+    helm:
+     valueFiles:
+     - ./stg/values.yaml
+  destination:
+    server: https://E1590B0C4B7CF0087E8224BE91AFDECA.gr7.us-east-2.eks.amazonaws.com
+    namespace: eth-middleware
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    syncOptions:
+     - CreateNamespace=true

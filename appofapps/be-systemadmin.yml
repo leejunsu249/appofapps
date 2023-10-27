@@ -1,0 +1,28 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: be-systemadmin
+  namespace: argocd
+  # Add a this finalizer ONLY if you want these to cascade delete.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: backoffice
+  source:
+    repoURL: http://gitlab-wallet.mgmt.an2.shd.naemo.io/backoffice/be-systemadmin-helm.git
+    targetRevision: master
+    path: .
+    helm:
+     valueFiles:
+     - ./stg/values.yaml
+  destination:
+    server: https://F0FD857663A5804DA13E426623D8E405.yl4.ap-northeast-2.eks.amazonaws.com
+    namespace: be-systemadmin
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    syncOptions:
+     - CreateNamespace=true
